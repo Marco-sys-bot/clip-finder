@@ -381,6 +381,7 @@ async function loadFromUrl(){
       try {
         const data = await response.json();
         if (data.error) message = data.error;
+        if (data.diagnostic) message += '\n\nDiagnostic : ' + data.diagnostic;
       } catch(e) {}
       throw new Error(message);
     }
@@ -398,6 +399,7 @@ async function loadFromUrl(){
     loadFile(blob, data.fileName || guessNameFromUrl(url));
   } catch (err){
     urlError.style.display = 'block';
+    urlError.style.whiteSpace = 'pre-line';
     urlError.textContent =
       err.message ||
       "Impossible de récupérer cette vidéo. Vérifiez le lien et réessayez.";
