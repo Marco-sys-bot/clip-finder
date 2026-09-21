@@ -52,70 +52,62 @@ Style: Default,Arial,62,&H00FFFFFF,&H0000FFFF,&H00101010,&H80000000,1,0,0,0,100,
 Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
 """+"\n".join(ev),encoding="utf8")
 
-def track_faces(src, start, end, sample_fps=4):
-    """Lightweight multi-face tracking + active-face scoring."""
-    cap = cv2.VideoCapture(src)
-    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
-    cap.set(cv2.CAP_PROP_POS_MSEC, start * 1000)
-    step = max(1, int(round(fps / sample_fps)))
-    tracks = []
-    frame_i = int(start * fps)
+def face_windows(src, start, end, sample_every=0.5):
+    """Detect several faces and choose the most active/visible face per ~2s window."""
+    try:
+        import cv2
+    except Exception:
+        return []
 
-    while True:
+    cap = cv2.VideoCapture(str(src))
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+    cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    tracks = []
+    cap.set(cv2.CAP_PROP_POS_MSEC, start * 1000)
+    last_sample = start
+
+    while cap.isOpened():
+        pos = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+        if pos > end:
+            break
         ok, frame = cap.read()
         if not ok:
             break
-        t = frame_i / fps
-        if t > end:
-            break
-        if frame_i % step:
-            frame_i += 1
+        if pos - last_sample < sample_every:
             continue
+        last_sample = pos
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = FACE.detectMultiScale(
-            gray, scaleFactor=1.1, minNeighbors=5,
-            minSize=(48, 48)
-        )
-        dets = []
+        faces = cascade.detectMultiScale(gray, 1.1, 5, minSize=(60,60))
+        detections = []
         for x,y,w,h in faces:
             cx, cy = x+w/2, y+h/2
-            mx1,mx2 = int(x+.2*w), int(x+.8*w)
-            my1,my2 = int(y+.5*h), int(y+.95*h)
-            roi = gray[max(0,my1):min(gray.shape[0],my2),
-                       max(0,mx1):min(gray.shape[1],mx2)]
-            motion = float(np.std(roi))/64.0 if roi.size else 0.0
-            size = min(1.0, (w*h)/(frame.shape[0]*frame.shape[1]*.08))
-            dets.append((cx,cy,w,h,motion,size))
+            roi = gray[max(0,int(y+h*.5)):min(gray.shape[0],int(y+h*.95)),
+                       max(0,int(x+w*.2)):min(gray.shape[1],int(x+w*.8))]
+            activity = float(roi.std()) if roi.size else 0.0
+            prominence = min(255.0, (w*h)**0.5)
+            detections.append((cx,cy,w,h,activity+prominence*.35))
 
+        # Nearest-neighbour association.
         used=set()
         for tr in tracks:
-            best=None; bestd=1e9
-            for j,d in enumerate(dets):
-                if j in used: continue
-                dist=((d[0]-tr["cx"])**2+(d[1]-tr["cy"])**2)**.5
-                if dist < max(80, 1.8*max(tr["w"],tr["h"],d[2],d[3])) and dist < bestd:
-                    best,bestd=j,dist
+            best=None; bestd=10**9
+            for i,d in enumerate(detections):
+                if i in used: continue
+                dist=((d[0]-tr["x"])**2+(d[1]-tr["y"])**2)**0.5
+                gate=max(90, 2*max(tr["w"],tr["h"],d[2],d[3]))
+                if dist < gate and dist < bestd:
+                    best,bestd=i,dist
             if best is not None:
-                d=dets[best]; used.add(best)
-                tr.update(cx=d[0],cy=d[1],w=d[2],h=d[3])
-                tr["activity"]=.55*tr["activity"]+.45*(.7*d[4]+.3*d[5])
-                tr["points"].append((t,d[0],d[1],tr["activity"]))
-                tr["miss"]=0
-            else:
-                tr["miss"]+=1
+                d=detections[best]; used.add(best)
+                tr["x"],tr["y"],tr["w"],tr["h"]=d[:4]
+                tr["score"]=.55*tr["score"]+.45*d[4]
+                tr["points"].append((pos,d[0],d[1],tr["score"]))
 
-        for j,d in enumerate(dets):
-            if j not in used:
-                tracks.append({
-                    "cx":d[0],"cy":d[1],"w":d[2],"h":d[3],
-                    "activity":.7*d[4]+.3*d[5],"miss":0,
-                    "points":[(t,d[0],d[1],.7*d[4]+.3*d[5])]
-                })
-
-        tracks=[tr for tr in tracks if tr["miss"] <= int(sample_fps*2)]
-        frame_i += 1
-
+        for i,d in enumerate(detections):
+            if i not in used:
+                tracks.append({"x":d[0],"y":d[1],"w":d[2],"h":d[3],
+                               "score":d[4],"points":[(pos,d[0],d[1],d[4])]})
     cap.release()
 
     windows=[]
@@ -124,63 +116,60 @@ def track_faces(src, start, end, sample_fps=4):
         e=min(end,t+2.0)
         choices=[]
         for tr in tracks:
-            pts=[q for q in tr["points"] if t<=q[0]<=e]
-            if not pts: continue
-            score=sum(q[3] for q in pts)/len(pts)
-            x=sum(q[1] for q in pts)/len(pts)
-            y=sum(q[2] for q in pts)/len(pts)
-            choices.append((score,x,y))
+            pts=[p for p in tr["points"] if t<=p[0]<=e]
+            if pts:
+                score=sum(p[3] for p in pts)/len(pts)
+                x=sum(p[1] for p in pts)/len(pts)
+                y=sum(p[2] for p in pts)/len(pts)
+                choices.append((score,x,y))
         if choices:
             score,x,y=max(choices,key=lambda q:q[0])
-            windows.append((t,e,x,y,score))
+            windows.append((t,e,x,y))
         t=e
     return windows
 
 
 def render(src,start,end,outfile,words,reframe=True,captions=True):
-    assfile = outfile.with_suffix(".ass")
+    assf=str(outfile)+".ass"
     if captions:
-        ass(words,start,end,assfile)
+        ass(words,start,end,assf)
 
-    windows = track_faces(src,start,end) if reframe else []
+    windows = face_windows(src,start,end) if reframe else []
     info = json.loads(cmd(["ffprobe","-v","error","-select_streams","v:0",
-                            "-show_entries","stream=width,height",
-                            "-of","json",str(src)]))
+                            "-show_entries","stream=width,height","-of","json",str(src)]))
     W=info["streams"][0]["width"]; H=info["streams"][0]["height"]
     parts=[]
 
     if windows:
-        for i,(ws,we,cx,cy,score) in enumerate(windows):
-            cropw=1080*H/1920
+        cropw = 1080 * H / 1920
+        for i,(ws,we,cx,cy) in enumerate(windows):
             left=max(0,min(W-cropw,cx-cropw/2))
             part=outfile.with_name(outfile.stem+f".part{i:03d}.mp4")
             vf=f"scale=-2:1920,crop=1080:1920:{int(left)}:0"
             if captions:
-                vf += f",ass={str(assfile).replace(':','\\:')}"
-            subprocess.run(["ffmpeg","-y","-ss",str(ws),"-i",str(src),
-                            "-t",str(max(.1,we-ws)),"-vf",vf,
-                            "-c:v","libx264","-preset","veryfast","-crf","20",
-                            "-c:a","aac","-b:a","160k","-movflags","+faststart",
-                            str(part)],check=True)
+                vf += f",ass={assf.replace(':','\\:')}"
+            cmd(["ffmpeg","-y","-ss",str(ws),"-i",str(src),"-t",str(max(.1,we-ws)),
+                 "-vf",vf,"-c:v","libx264","-preset","veryfast","-crf","20",
+                 "-c:a","aac","-b:a","160k","-movflags","+faststart",str(part)])
             parts.append(part)
 
-        lst=outfile.with_suffix(".concat.txt")
-        lst.write_text("\n".join("file '"+str(x).replace("'","'\\''")+"'" for x in parts))
-        subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),
-                        "-c","copy",str(outfile)],check=True)
-        for x in parts: x.unlink(missing_ok=True)
-        lst.unlink(missing_ok=True)
+        if parts:
+            lst=outfile.with_suffix(".concat.txt")
+            lst.write_text("\n".join("file '"+str(x).replace("'","'\\''")+"'" for x in parts))
+            cmd(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),
+                 "-c","copy",str(outfile)])
+            for x in parts: x.unlink(missing_ok=True)
+            lst.unlink(missing_ok=True)
     else:
         vf="scale=-2:1920,crop=1080:1920:(iw-1080)/2:0"
         if captions:
-            vf += f",ass={str(assfile).replace(':','\\:')}"
-        subprocess.run(["ffmpeg","-y","-ss",str(start),"-i",str(src),
-                        "-t",str(end-start),"-vf",vf,
-                        "-c:v","libx264","-preset","veryfast","-crf","20",
-                        "-c:a","aac","-b:a","160k","-movflags","+faststart",
-                        str(outfile)],check=True)
+            vf += f",ass={assf.replace(':','\\:')}"
+        cmd(["ffmpeg","-y","-ss",str(start),"-i",str(src),"-t",str(end-start),
+             "-vf",vf,"-c:v","libx264","-preset","veryfast","-crf","20",
+             "-c:a","aac","-b:a","160k","-movflags","+faststart",str(outfile)])
 
-    assfile.unlink(missing_ok=True)
+    if os.path.exists(assf):
+        os.remove(assf)
 
 
 def main():
