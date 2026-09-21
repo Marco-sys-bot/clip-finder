@@ -147,7 +147,8 @@ def render(src,start,end,outfile,words,reframe=True,captions=True):
             part=outfile.with_name(outfile.stem+f".part{i:03d}.mp4")
             vf=f"scale=-2:1920,crop=1080:1920:{int(left)}:0"
             if captions:
-                vf += f",ass={assf.replace(':','\\:')}"
+                ass_path = assf.replace(":", "\\:")
+                vf += ",ass=" + ass_path
             cmd(["ffmpeg","-y","-ss",str(ws),"-i",str(src),"-t",str(max(.1,we-ws)),
                  "-vf",vf,"-c:v","libx264","-preset","veryfast","-crf","20",
                  "-c:a","aac","-b:a","160k","-movflags","+faststart",str(part)])
@@ -163,7 +164,8 @@ def render(src,start,end,outfile,words,reframe=True,captions=True):
     else:
         vf="scale=-2:1920,crop=1080:1920:(iw-1080)/2:0"
         if captions:
-            vf += f",ass={assf.replace(':','\\:')}"
+            ass_path = assf.replace(":", "\\:")
+            vf += ",ass=" + ass_path
         cmd(["ffmpeg","-y","-ss",str(start),"-i",str(src),"-t",str(end-start),
              "-vf",vf,"-c:v","libx264","-preset","veryfast","-crf","20",
              "-c:a","aac","-b:a","160k","-movflags","+faststart",str(outfile)])
