@@ -1,8 +1,15 @@
 services:
   - type: web
-    name: clip-finder
+    name: clip-finder-v11
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile
     autoDeploy: true
-    healthCheckPath: /
+    healthCheckPath: /api/health
+    envVars:
+      - key: WHISPER_MODEL
+        value: small
+      - key: WHISPER_DEVICE
+        value: cpu
+      - key: WHISPER_COMPUTE_TYPE
+        value: int8

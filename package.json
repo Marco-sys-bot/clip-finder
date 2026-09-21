@@ -1,17 +1,13 @@
 {
-  "name": "clip-finder",
-  "version": "1.4.0",
+  "name": "clip-finder-v11",
+  "version": "11.0.0",
   "private": true,
-  "description": "Clip Finder - analyse des vidéos et import depuis des URLs publiques avec diagnostics multi-méthodes",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "engines": {
-    "node": ">=20 <26"
-  },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
   }
 }
