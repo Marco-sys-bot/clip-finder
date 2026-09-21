@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-STATIC = Path(__file__).parent / "web"
+STATIC = Path(__file__).parent
 app.mount("/assets", StaticFiles(directory=STATIC), name="assets")
 
 

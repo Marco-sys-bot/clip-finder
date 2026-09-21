@@ -1,4 +1,4 @@
-# Clip Finder AI V15
+# Clip Finder AI V15.1
 
 Vrai site web public, sans Klap.
 
@@ -33,3 +33,7 @@ Render fournit HTTPS/TLS pour les domaines configurés.
 
 ## Limites du plan gratuit
 Le traitement vidéo et Whisper sont gourmands en CPU. Pour une vraie utilisation publique, un plan plus puissant et du stockage persistant sont à prévoir.
+
+
+## V15.1
+Le fichier `index.html` est maintenant à la racine du dépôt. Le Dockerfile ne dépend plus d'un dossier `/web`, ce qui évite l'erreur Render `"/web": not found` lorsque les fichiers ont été importés individuellement dans GitHub.
