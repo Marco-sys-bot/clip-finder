@@ -1,9 +1,8 @@
 services:
   - type: web
-    name: clip-finder
+    name: clip-finder-ai
     runtime: docker
     plan: free
-    dockerfilePath: ./Dockerfile
     autoDeploy: true
     healthCheckPath: /api/health
     envVars:
@@ -13,3 +12,5 @@ services:
         value: cpu
       - key: WHISPER_COMPUTE_TYPE
         value: int8
+      - key: DATA_DIR
+        value: /tmp/clip-finder-data

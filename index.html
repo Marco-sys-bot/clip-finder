@@ -3,175 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache">
-<title>Clip Finder AI — V12.2</title>
+<title>Clip Finder AI — transforme tes vidéos en shorts</title>
+<meta name="description" content="Clip Finder AI détecte les meilleurs moments et crée des clips verticaux 9:16 avec sous-titres.">
 <style>
-:root{--bg:#07080d;--panel:#10131b;--text:#f7f7fb;--muted:#9ca3b4;--line:#252b38;--accent:#8b5cf6;--ok:#34d399;--bad:#fb7185}
-*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 50% -10%,#30245a 0,#0a0b10 45%);min-height:100vh}
-.wrap{max-width:1100px;margin:auto;padding:28px 18px 70px}.nav{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900}.badge{font-size:12px;border:1px solid #43336c;padding:7px 10px;border-radius:999px;color:#ddd6fe}
-.hero{text-align:center;padding:52px 0 28px}.hero h1{font-size:clamp(40px,7vw,72px);line-height:.98;letter-spacing:-.05em;max-width:900px;margin:18px auto}.hero p{color:var(--muted);max-width:720px;margin:auto;font-size:17px;line-height:1.6}
-.card{background:rgba(16,19,27,.94);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 25px 80px #0008}.label{display:block;font-size:13px;color:#d9dce4;margin:0 0 7px}.input,.select,.textarea{width:100%;background:#0b0e14;color:var(--text);border:1px solid #303746;border-radius:12px;padding:13px 14px}.textarea{min-height:75px;resize:vertical}
-.source-tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}.source-btn{border:1px solid #303746;background:#0c1017;color:#dfe3ec;border-radius:11px;padding:10px 7px;cursor:pointer;font-weight:800;font-size:12px}.source-btn.active{border-color:var(--accent);background:#19132c}.source-btn small{display:block;color:#8f98a9;font-weight:500;margin-top:3px;font-size:10px}
-.help{font-size:12px;color:var(--muted);background:#0b0f16;border:1px solid #252b38;border-radius:11px;padding:10px 12px;margin-bottom:12px}.help.ok{border-color:#1f6b54}.help.warn{border-color:#6d5a24}
-.grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px}.field{margin:12px 0}.options{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.check{display:flex;align-items:center;gap:7px;background:#0c1017;border:1px solid var(--line);padding:9px 11px;border-radius:10px;color:#d2d6df;font-size:13px}
-.primary{width:100%;border:0;border-radius:13px;padding:15px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-weight:900;font-size:15px;cursor:pointer}.primary:disabled{opacity:.5;cursor:wait}
-.status{display:none;margin-top:18px;border:1px solid var(--line);background:#0b0f16;border-radius:14px;padding:15px}.status.show{display:block}.status.ok{border-color:#1f6b54}.status.err{border-color:#6d2838}.progress{height:8px;background:#202631;border-radius:999px;overflow:hidden;margin-top:12px}.bar{height:100%;width:0;background:linear-gradient(90deg,#8b5cf6,#c4b5fd)}
-.results{display:grid;gap:12px;margin-top:20px}.result{display:grid;grid-template-columns:70px 1fr auto;gap:14px;align-items:center;background:#0c1017;border:1px solid var(--line);border-radius:15px;padding:14px}.score{text-align:center;font-size:19px;font-weight:950;color:#ddd6fe}.score small{display:block;font-size:10px;color:#8d96a7}.meta strong{display:block}.meta span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.4}.btn{border:1px solid #3b4452;background:#141923;color:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}.note,.footer{font-size:12px;color:var(--muted);line-height:1.55}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.feature{border:1px solid var(--line);background:#0d1118;border-radius:14px;padding:12px}.feature b{display:block;font-size:13px}.feature span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-.hidden{display:none!important}@media(max-width:800px){.source-tabs{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr 1fr}.features{grid-template-columns:1fr 1fr}}@media(max-width:520px){.source-tabs,.grid,.features{grid-template-columns:1fr}.result{grid-template-columns:55px 1fr}.result .btn{grid-column:2}}
+:root{--bg:#07080d;--panel:#10131b;--line:#252a37;--text:#f6f7fb;--muted:#9ca3b3;--accent:#7c5cff;--accent2:#19d3ae}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 50% -10%,#1c1740 0,#07080d 42%);color:var(--text)}
+.wrap{max-width:1120px;margin:auto;padding:28px 20px 70px}.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:55px}.logo{font-weight:800;font-size:20px}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px}
+.hero{text-align:center;max-width:820px;margin:0 auto 36px}.hero h1{font-size:clamp(38px,7vw,76px);line-height:.98;margin:0 0 18px;letter-spacing:-3px}.hero h1 span{background:linear-gradient(90deg,#fff,#9b8cff);-webkit-background-clip:text;color:transparent}.hero p{font-size:18px;color:var(--muted);line-height:1.6}
+.card{background:rgba(16,19,27,.9);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 20px 70px #0007}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab{border:1px solid var(--line);background:#0c0f15;color:#cbd0dc;border-radius:12px;padding:10px 13px;cursor:pointer}.tab.active{background:#211a4e;border-color:#6c57e9;color:white}
+input[type=url],input[type=file],select,textarea{width:100%;background:#090b10;color:white;border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}textarea{min-height:90px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.check{display:flex;gap:9px;align-items:center;color:#d7dbe5;margin-top:14px}.check input{accent-color:var(--accent)}
+button.main{width:100%;border:0;border-radius:15px;padding:15px;margin-top:18px;background:linear-gradient(90deg,#7657ff,#9a6bff);color:white;font-weight:800;font-size:16px;cursor:pointer}.status{margin-top:16px;padding:14px;border-radius:14px;background:#0b0e14;border:1px solid var(--line);color:#cbd0dc;white-space:pre-wrap}.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:16px}.clip{background:#0b0e14;border:1px solid var(--line);border-radius:18px;padding:12px}.clip video{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:12px;background:#000}.download{display:block;text-align:center;margin-top:10px;padding:10px;border-radius:10px;background:#171b25;color:#fff;text-decoration:none}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}.feature{padding:18px;border:1px solid var(--line);border-radius:18px;background:#0c0f15}.feature b{display:block;margin-bottom:7px}.feature span{color:var(--muted);font-size:13px;line-height:1.5}@media(max-width:760px){.grid,.features{grid-template-columns:1fr}.nav{margin-bottom:35px}.hero h1{letter-spacing:-2px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="nav"><div class="brand">✂️ Clip Finder <span style="color:#a78bfa">AI</span></div><div class="badge">V12.2 · moteur local</div></div>
+  <div class="nav"><div class="logo">✦ Clip Finder AI</div><div class="pill">V15 · moteur local</div></div>
   <section class="hero">
-    <h1>Transforme une longue vidéo en clips.</h1>
-    <p>Transcription locale, sélection de passages, sous-titres et recadrage vertical 9:16 avec suivi multi-visages.</p>
+    <h1>Transforme une longue vidéo en <span>clips prêts à poster.</span></h1>
+    <p>Importe ta vidéo ou colle une URL accessible. Clip Finder analyse la parole, repère les passages intéressants et génère plusieurs vidéos verticales 9:16 avec sous-titres.</p>
   </section>
 
   <section class="card">
-    <label class="label">Source de la vidéo</label>
-    <div class="source-tabs">
-      <button class="source-btn active" data-source="youtube" type="button">▶️ YouTube<small>URL publique</small></button>
-      <button class="source-btn" data-source="twitch" type="button">🟣 Twitch<small>URL accessible</small></button>
-      <button class="source-btn" data-source="tiktok" type="button">🎵 TikTok<small>URL accessible</small></button>
-      <button class="source-btn" data-source="instagram" type="button">📸 Instagram<small>URL accessible</small></button>
-      <button class="source-btn" data-source="vimeo" type="button">🔵 Vimeo<small>URL accessible</small></button>
-      <button class="source-btn" data-source="file" type="button">📁 Fichier<small>MP4 / MOV…</small></button>
+    <div class="tabs">
+      <button class="tab active" data-mode="url">Lien vidéo</button>
+      <button class="tab" data-mode="file">Fichier</button>
     </div>
-    <div class="help ok" id="help"></div>
-    <input class="input" id="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
-    <input id="file" type="file" accept="video/*" class="hidden">
+    <div id="urlBox"><input id="url" type="url" placeholder="https://..."></div>
+    <div id="fileBox" style="display:none"><input id="file" type="file" accept="video/*"></div>
 
     <div class="grid">
-      <div class="field"><label class="label">Langue</label>
-        <select class="select" id="language"><option value="auto">Auto</option><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select>
-      </div>
-      <div class="field"><label class="label">Nombre de clips</label>
-        <select class="select" id="count"><option>5</option><option selected>10</option><option>15</option><option>20</option></select>
-      </div>
-      <div class="field"><label class="label">Durée</label>
-        <select class="select" id="duration"><option value="60">1 min</option><option value="90" selected>1 min 30</option><option value="120">2 min</option><option value="150">2 min 30</option><option value="180">3 min</option></select>
-      </div>
+      <label>Nombre de clips<select id="count"><option>3</option><option selected>5</option><option>10</option><option>15</option><option>20</option></select></label>
+      <label>Durée cible<select id="duration"><option>60</option><option>75</option><option selected>90</option><option>120</option><option>150</option><option>180</option></select></label>
+      <label>Langue<select id="language"><option value="auto">Auto</option><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select></label>
     </div>
 
-    <div class="options">
-      <label class="check"><input id="captions" type="checkbox" checked> Sous-titres automatiques</label>
-      <label class="check"><input id="reframe" type="checkbox" checked> Suivi multi-visages 9:16</label>
-    </div>
-
-    <div class="field">
-      <label class="label">Contexte facultatif</label>
-      <textarea class="textarea" id="context" placeholder="Ex. noms des invités, termes gaming, noms propres..."></textarea>
-    </div>
-
-    <div class="features">
-      <div class="feature"><b>🎙️ Whisper</b><span>Transcription locale.</span></div>
-      <div class="feature"><b>👥 Multi-visages</b><span>Le cadrage peut changer de personne.</span></div>
-      <div class="feature"><b>📱 9:16</b><span>Export 1080×1920.</span></div>
-      <div class="feature"><b>🎬 MP4</b><span>Clips prêts à récupérer.</span></div>
-    </div>
-
-    <button class="primary" id="generate">✨ Générer mes clips</button>
-    <div class="status" id="status"><b id="statusTitle"></b><div id="statusText" class="note"></div><div class="progress"><div class="bar" id="bar"></div></div></div>
-    <div class="results" id="results"></div>
-    <div class="note" style="margin-top:14px">Le serveur utilise yt-dlp uniquement lorsque l'URL est normalement accessible. Aucun contournement de DRM ou d'anti-bot. Traite uniquement des vidéos que tu as le droit d'utiliser.</div>
+    <label class="check"><input id="captions" type="checkbox" checked> Sous-titres automatiques</label>
+    <label class="check"><input id="reframe" type="checkbox" checked> Recadrage intelligent 9:16</label>
+    <label style="display:block;margin-top:16px;color:#cbd0dc">Contexte facultatif<textarea id="context" placeholder="Ex : cherche les moments drôles, les révélations ou les phrases fortes..."></textarea></label>
+    <button class="main" id="go">Créer mes clips</button>
+    <div id="status" class="status">Prêt.</div>
+    <div id="results" class="results"></div>
   </section>
-  <div class="footer">Clip Finder V12.2 · faster-whisper + OpenCV + FFmpeg · Ollama optionnel</div>
+
+  <div class="features">
+    <div class="feature"><b>🎙️ Sous-titres</b><span>Transcription locale avec Whisper.</span></div>
+    <div class="feature"><b>📱 9:16</b><span>Format vertical 1080×1920.</span></div>
+    <div class="feature"><b>✂️ Multi-clips</b><span>Plusieurs passages de 1 à 3 minutes.</span></div>
+    <div class="feature"><b>👤 Visages</b><span>Recadrage automatique autour du visage détecté.</span></div>
+  </div>
 </div>
-
 <script>
+let mode='url';
 const $=id=>document.getElementById(id);
-const statusBox=$('status'), title=$('statusTitle'), text=$('statusText'), bar=$('bar'), results=$('results');
-let source='youtube', chosenFile=null;
-
-const info={
- youtube:['https://www.youtube.com/watch?v=...','YouTube : colle une URL publique. Le serveur tentera un téléchargement normal avec yt-dlp.','ok'],
- twitch:['https://www.twitch.tv/...','Twitch : fonctionne uniquement si yt-dlp peut accéder normalement à cette URL. Sinon utilise un fichier vidéo.','warn'],
- tiktok:['https://www.tiktok.com/@.../video/...','TikTok : accès dépendant de la disponibilité de l’URL pour yt-dlp.','warn'],
- instagram:['https://www.instagram.com/...','Instagram : accès dépendant de la disponibilité de l’URL pour yt-dlp.','warn'],
- vimeo:['https://vimeo.com/...','Vimeo : utilise une vidéo publique normalement accessible.','ok'],
- file:['Choisir un fichier vidéo…','Fichier local : le navigateur envoie directement la vidéo au serveur Clip Finder.','ok']
-};
-
-function setSource(s){
- source=s;
- document.querySelectorAll('.source-btn').forEach(b=>b.classList.toggle('active',b.dataset.source===s));
- const x=info[s]; $('help').textContent=x[1]; $('help').className='help '+x[2];
- $('url').placeholder=x[0];
- $('url').classList.toggle('hidden',s==='file');
- $('file').classList.toggle('hidden',s!=='file');
- if(s==='file') $('file').click();
-}
-document.querySelectorAll('.source-btn').forEach(b=>b.onclick=()=>setSource(b.dataset.source));
-$('file').onchange=()=>{chosenFile=$('file').files[0]||null; if(chosenFile){$('help').textContent='Fichier prêt : '+chosenFile.name+' — clique sur « Générer mes clips ». ';$('help').className='help ok';}};
-
-function show(t,m,p=0,type=''){statusBox.className='status show '+type;title.textContent=t;text.textContent=m;bar.style.width=p+'%'}
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-
-async function api(url,opt={}){
- const r=await fetch(url,opt);
- let d={}; try{d=await r.json()}catch{}
- if(!r.ok) throw new Error(d.error||d.message||('Erreur HTTP '+r.status));
- return d;
-}
-
-async function start(){
- const btn=$('generate'); btn.disabled=true; results.innerHTML='';
- try{
-   if(source==='file' && !chosenFile) throw new Error('Choisis d’abord un fichier vidéo.');
-   if(source!=='file' && !$('url').value.trim()) throw new Error('Colle d’abord une URL vidéo.');
-
-   const fd=new FormData();
-   if(source==='file') fd.append('file',chosenFile);
-   else fd.append('url',$('url').value.trim());
-   fd.append('count',$('count').value);
-   fd.append('duration',$('duration').value);
-   fd.append('language',$('language').value);
-   fd.append('captions',$('captions').checked?'true':'false');
-   fd.append('reframe',$('reframe').checked?'true':'false');
-   fd.append('context',$('context').value.trim());
-
-   show('Démarrage…','Envoi de la source au moteur local.',8);
-   const created=await api('/api/jobs',{method:'POST',body:fd});
-   const id=created.job.id;
-   await poll(id);
- }catch(e){
-   show('Échec',e.message,0,'err');
-   btn.disabled=false;
- }
-}
-
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); mode=b.dataset.mode;
+  $('urlBox').style.display=mode==='url'?'block':'none';
+  $('fileBox').style.display=mode==='file'?'block':'none';
+});
+function setStatus(x){$('status').textContent=x}
 async function poll(id){
- for(let i=0;i<240;i++){
-   const d=await api('/api/jobs/'+encodeURIComponent(id));
-   const j=d.job;
-   if(j.status==='error') throw new Error(j.message||'Le traitement a échoué.');
-   if(j.status==='ready'){
-     show('🎉 Clips prêts',`${j.clips.length} clip(s) généré(s).`,100,'ok');
-     renderResults(id,j.clips);
-     $('generate').disabled=false;
-     return;
-   }
-   show('Analyse en cours…',j.message||'Transcription, sélection et rendu vidéo.',Math.min(95,10+i*.35));
-   await new Promise(r=>setTimeout(r,3000));
- }
- throw new Error('Le traitement est toujours en cours. Vérifie le statut du service Render.');
+  for(let i=0;i<720;i++){
+    const r=await fetch('/api/jobs/'+id); const j=await r.json();
+    setStatus(j.status==='done'?'Terminé ✓':j.status==='error'?'Échec\\n'+(j.error||'Erreur inconnue'):j.step||'Traitement...');
+    if(j.status==='done'){
+      $('results').innerHTML=j.clips.map(c=>`<div class="clip"><video controls preload="metadata" src="${c.url}"></video><a class="download" href="${c.url}" download>Télécharger MP4</a></div>`).join('');
+      return;
+    }
+    if(j.status==='error') return;
+    await new Promise(r=>setTimeout(r,2500));
+  }
+  setStatus('Le traitement prend plus de temps que prévu. Recharge la page plus tard.');
 }
-
-function renderResults(job,clips){
- results.innerHTML='';
- clips.forEach((c,i)=>{
-   const row=document.createElement('div'); row.className='result';
-   row.innerHTML=`<div class="score">${esc(c.score)}<small>/100</small></div>
-   <div class="meta"><strong>${esc(c.title||'Clip '+(i+1))}</strong><span>${esc(c.start)}s → ${esc(c.end)}s · ${esc(c.file)}</span></div>
-   <button class="btn">Télécharger MP4</button>`;
-   row.querySelector('.btn').onclick=()=>window.location.href='/api/clips/'+encodeURIComponent(job)+'/'+encodeURIComponent(c.file);
-   results.appendChild(row);
- });
-}
-
-$('generate').onclick=start;
-setSource('youtube');
+$('go').onclick=async()=>{
+  $('results').innerHTML=''; setStatus('Envoi de la tâche...');
+  const fd=new FormData();
+  if(mode==='url') fd.append('url',$('url').value.trim());
+  else { const f=$('file').files[0]; if(f) fd.append('file',f); }
+  fd.append('count',$('count').value); fd.append('duration',$('duration').value);
+  fd.append('language',$('language').value); fd.append('captions',$('captions').checked?'1':'0');
+  fd.append('reframe',$('reframe').checked?'1':'0'); fd.append('context',$('context').value);
+  try{
+    const r=await fetch('/api/jobs',{method:'POST',body:fd});
+    const j=await r.json(); if(!r.ok) throw new Error(j.detail||'Erreur');
+    await poll(j.id);
+  }catch(e){setStatus('Échec\\n'+e.message)}
+};
 </script>
 </body>
 </html>

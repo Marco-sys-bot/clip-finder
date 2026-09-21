@@ -1,22 +1,35 @@
-# Clip Finder V12.2
+# Clip Finder AI V15
 
-Version autonome, sans Klap.
+Vrai site web public, sans Klap.
 
-- YouTube/Twitch/TikTok/Instagram/Vimeo : URL envoyée au serveur puis téléchargée uniquement si elle est normalement accessible par yt-dlp.
-- Fichier local : upload direct vers le serveur.
-- faster-whisper pour la transcription.
-- OpenCV pour le suivi léger de plusieurs visages et le recadrage vertical.
-- FFmpeg pour l'export MP4 1080x1920.
-- Ollama reste optionnel pour améliorer la sélection des passages.
-- Aucun contournement de DRM, paywall ou anti-bot.
+## Ce que fait V15
+- Upload d'une vidéo depuis le navigateur
+- URL vidéo via yt-dlp lorsque l'URL est normalement accessible
+- Transcription locale avec faster-whisper
+- Sélection automatique de plusieurs passages
+- Clips de 60 à 180 secondes
+- Sous-titres automatiques
+- Recadrage vertical 9:16 avec détection de visage
+- MP4 H.264/AAC
+- Interface web responsive
+- API `/api/jobs`
+- Compatible Render avec Docker
 
-## Déploiement
-Le service Render est un Docker Web Service et peut être redéployé automatiquement après un commit GitHub sur la branche connectée.
+## Important pour YouTube
+Le site ne contourne pas les protections anti-bot, DRM ou restrictions de plateforme.
+Une URL peut donc être refusée par la plateforme même si l'interface du site fonctionne.
+Dans ce cas, utilise un fichier vidéo que tu as le droit de traiter.
 
+## Déploiement Render
+1. Mets le contenu du dossier dans ton dépôt GitHub.
+2. Dans Render: New > Web Service.
+3. Choisis le dépôt GitHub.
+4. Runtime: Docker.
+5. Render peut aussi lire `render.yaml`.
+6. Après le déploiement, tu obtiens une URL `onrender.com`.
+7. Pour un vrai nom de domaine, ajoute un Custom Domain dans Render puis configure le DNS chez ton registrar.
 
-## V14 architecture
-V14 is a self-contained Clip Finder stack. It uses faster-whisper for transcription,
-OpenCV for lightweight multi-face reframing, FFmpeg for 9:16 MP4 rendering, and yt-dlp
-with EJS plus the current bgutil PO-token provider for public YouTube downloads.
-The PO-token provider is the current 2.0.0 release. It is used without personal cookies.
-YouTube account-only, private, DRM-protected, or otherwise unavailable videos can still fail.
+Render fournit HTTPS/TLS pour les domaines configurés.
+
+## Limites du plan gratuit
+Le traitement vidéo et Whisper sont gourmands en CPU. Pour une vraie utilisation publique, un plan plus puissant et du stockage persistant sont à prévoir.
