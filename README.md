@@ -1,4 +1,4 @@
-# Clip Finder V12.1
+# Clip Finder V13.0
 
 Version autonome, sans Klap.
 
@@ -12,3 +12,6 @@ Version autonome, sans Klap.
 
 ## Déploiement
 Le service Render est un Docker Web Service et peut être redéployé automatiquement après un commit GitHub sur la branche connectée.
+
+## YouTube V13
+Uses the current yt-dlp EJS setup with Node.js and tries supported public YouTube player clients with format fallbacks. It does not use personal cookies, DRM bypasses, or anti-bot evasion. Some YouTube videos can still be unavailable from a server because of account, region, membership, or platform restrictions.

@@ -5,7 +5,7 @@ fs.mkdirSync(path.join(DATA,"uploads"),{recursive:true});
 const upload=multer({dest:path.join(DATA,"uploads"),limits:{fileSize:8*1024*1024*1024}});
 const jobs=new Map();
 function run(a){return new Promise((ok,no)=>{let o="",e="";const p=spawn("python3",["pipeline.py",...a],{cwd:__dirname});p.stdout.on("data",x=>o+=x);p.stderr.on("data",x=>e+=x);p.on("close",c=>c?no(Error(e.slice(-5000)||"pipeline error")):ok(o))})}
-app.get("/api/health",(q,r)=>r.json({ok:true,version:"12.1",klap:false,engine:"faster-whisper + OpenCV multi-face reframing + FFmpeg",ollama:!!process.env.OLLAMA_BASE_URL}));
+app.get("/api/health",(q,r)=>r.json({ok:true,version:"13.0",klap:false,engine:"faster-whisper + OpenCV multi-face reframing + FFmpeg",ollama:!!process.env.OLLAMA_BASE_URL}));
 app.post("/api/jobs",upload.single("file"),async(q,r)=>{try{
  const id=Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7),dir=path.join(DATA,"jobs",id);fs.mkdirSync(path.join(dir,"clips"),{recursive:true});
  let source="";if(q.file){source=path.join(dir,"source"+path.extname(q.file.originalname||".mp4"));fs.renameSync(q.file.path,source)}else source=(q.body.url||"").trim();
@@ -19,4 +19,4 @@ app.post("/api/jobs",upload.single("file"),async(q,r)=>{try{
 app.get("/api/jobs/:id",(q,r)=>{const j=jobs.get(q.params.id);j?r.json({job:j}):r.status(404).json({error:"Job introuvable"})});
 app.get("/api/clips/:job/:file",(q,r)=>{const f=path.basename(q.params.file),p=path.join(DATA,"jobs",q.params.job,"clips",f);fs.existsSync(p)?r.download(p,f):r.status(404).end()});
 app.use((q,r)=>r.sendFile(path.join(__dirname,"index.html")));
-app.listen(PORT,"0.0.0.0",()=>console.log("Clip Finder V12.1 running on "+PORT));
+app.listen(PORT,"0.0.0.0",()=>console.log("Clip Finder V13.0 running on "+PORT));

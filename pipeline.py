@@ -7,7 +7,20 @@ def cmd(a):
 def dur(p): return float(cmd(["ffprobe","-v","error","-show_entries","format=duration","-of","default=nw=1:nk=1",str(p)]))
 def getvideo(src,out):
  if Path(src).exists(): return Path(src)
- cmd(["yt-dlp","--no-playlist","-f","bv*+ba/b","--merge-output-format","mp4","-o",str(out),src]);return out
+ base=["yt-dlp","--no-playlist","--js-runtimes","node","--remote-components","ejs:github"]
+ formats=["bv*+ba/b","best[ext=mp4]/best"]
+ clients=["web_safari","mweb","web_embedded","tv"]
+ last=None
+ for client in clients:
+  for fmt in formats:
+   args=base+["--extractor-args",f"youtube:player_client={client}","-f",fmt,"--merge-output-format","mp4","-o",str(out),src]
+   try:
+    cmd(args)
+    if out.exists() and out.stat().st_size>0:return out
+   except Exception as e:
+    last=e
+ if last:raise last
+ return out
 def trans(p,lang):
  from faster_whisper import WhisperModel
  dev=os.getenv("WHISPER_DEVICE","cpu"); typ=os.getenv("WHISPER_COMPUTE_TYPE","int8" if dev=="cpu" else "float16")
