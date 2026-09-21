@@ -6,21 +6,42 @@ def cmd(a):
  return p.stdout
 def dur(p): return float(cmd(["ffprobe","-v","error","-show_entries","format=duration","-of","default=nw=1:nk=1",str(p)]))
 def getvideo(src,out):
- if Path(src).exists(): return Path(src)
- base=["yt-dlp","--no-playlist","--js-runtimes","node","--remote-components","ejs:github"]
- formats=["bv*+ba/b","best[ext=mp4]/best"]
- clients=["web_safari","mweb","web_embedded","tv"]
- last=None
- for client in clients:
-  for fmt in formats:
-   args=base+["--extractor-args",f"youtube:player_client={client}","-f",fmt,"--merge-output-format","mp4","-o",str(out),src]
-   try:
-    cmd(args)
-    if out.exists() and out.stat().st_size>0:return out
-   except Exception as e:
-    last=e
- if last:raise last
- return out
+    if Path(src).exists():
+        return Path(src)
+    # Public YouTube downloader stack: yt-dlp + EJS + current BgUtils PO-token provider.
+    # No personal cookies or account credentials are used.
+    script=os.getenv("BGUTIL_SCRIPT", "/opt/bgutil/server/build/generate_once.js")
+    base=["yt-dlp","--no-playlist","--js-runtimes","node",
+          "--remote-components","ejs:github",
+          "--extractor-args",f"youtubepot-bgutilscript:script_path={script}",
+          "--extractor-args","youtube:player_client=mweb"]
+    formats=["bv*+ba/b","best[ext=mp4]/best"]
+    last=None
+    for fmt in formats:
+        args=base+["-f",fmt,"--merge-output-format","mp4","-o",str(out),src]
+        try:
+            cmd(args)
+            if out.exists() and out.stat().st_size>0:
+                return out
+        except Exception as e:
+            last=e
+    # Fallbacks for videos where mweb is not suitable; these do not bypass auth/DRM.
+    for client in ["web_safari","web_embedded","tv"]:
+        for fmt in formats:
+            args=["yt-dlp","--no-playlist","--js-runtimes","node",
+                  "--remote-components","ejs:github",
+                  "--extractor-args",f"youtube:player_client={client}",
+                  "-f",fmt,"--merge-output-format","mp4","-o",str(out),src]
+            try:
+                cmd(args)
+                if out.exists() and out.stat().st_size>0:
+                    return out
+            except Exception as e:
+                last=e
+    if last:
+        raise last
+    raise RuntimeError("Impossible de récupérer la vidéo avec les méthodes publiques disponibles.")
+
 def trans(p,lang):
  from faster_whisper import WhisperModel
  dev=os.getenv("WHISPER_DEVICE","cpu"); typ=os.getenv("WHISPER_COMPUTE_TYPE","int8" if dev=="cpu" else "float16")

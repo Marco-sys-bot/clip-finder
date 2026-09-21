@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: clip-finder-v11
+    name: clip-finder
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile

@@ -1,4 +1,4 @@
-# Clip Finder V13.0
+# Clip Finder V12.2
 
 Version autonome, sans Klap.
 
@@ -13,5 +13,10 @@ Version autonome, sans Klap.
 ## Déploiement
 Le service Render est un Docker Web Service et peut être redéployé automatiquement après un commit GitHub sur la branche connectée.
 
-## YouTube V13
-Uses the current yt-dlp EJS setup with Node.js and tries supported public YouTube player clients with format fallbacks. It does not use personal cookies, DRM bypasses, or anti-bot evasion. Some YouTube videos can still be unavailable from a server because of account, region, membership, or platform restrictions.
+
+## V14 architecture
+V14 is a self-contained Clip Finder stack. It uses faster-whisper for transcription,
+OpenCV for lightweight multi-face reframing, FFmpeg for 9:16 MP4 rendering, and yt-dlp
+with EJS plus the current bgutil PO-token provider for public YouTube downloads.
+The PO-token provider is the current 2.0.0 release. It is used without personal cookies.
+YouTube account-only, private, DRM-protected, or otherwise unavailable videos can still fail.
