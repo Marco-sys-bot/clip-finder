@@ -47,7 +47,7 @@ def start_job(job_id: str, source: Optional[str], uploaded_path: Optional[Path],
 
     try:
         if uploaded_path:
-            src = work / f"source{uploaded_path.suffix}"
+            src = work / "source" + uploaded_path.suffix
             shutil.copy2(uploaded_path, src)
         else:
             src = work / "source.mp4"
