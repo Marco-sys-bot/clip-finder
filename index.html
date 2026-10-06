@@ -1,94 +1,23 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Clip Finder AI — transforme tes vidéos en shorts</title>
-<meta name="description" content="Clip Finder AI détecte les meilleurs moments et crée des clips verticaux 9:16 avec sous-titres.">
-<style>
-:root{--bg:#07080d;--panel:#10131b;--line:#252a37;--text:#f6f7fb;--muted:#9ca3b3;--accent:#7c5cff;--accent2:#19d3ae}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at 50% -10%,#1c1740 0,#07080d 42%);color:var(--text)}
-.wrap{max-width:1120px;margin:auto;padding:28px 20px 70px}.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:55px}.logo{font-weight:800;font-size:20px}.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:12px}
-.hero{text-align:center;max-width:820px;margin:0 auto 36px}.hero h1{font-size:clamp(38px,7vw,76px);line-height:.98;margin:0 0 18px;letter-spacing:-3px}.hero h1 span{background:linear-gradient(90deg,#fff,#9b8cff);-webkit-background-clip:text;color:transparent}.hero p{font-size:18px;color:var(--muted);line-height:1.6}
-.card{background:rgba(16,19,27,.9);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 20px 70px #0007}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab{border:1px solid var(--line);background:#0c0f15;color:#cbd0dc;border-radius:12px;padding:10px 13px;cursor:pointer}.tab.active{background:#211a4e;border-color:#6c57e9;color:white}
-input[type=url],input[type=file],select,textarea{width:100%;background:#090b10;color:white;border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}textarea{min-height:90px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.check{display:flex;gap:9px;align-items:center;color:#d7dbe5;margin-top:14px}.check input{accent-color:var(--accent)}
-button.main{width:100%;border:0;border-radius:15px;padding:15px;margin-top:18px;background:linear-gradient(90deg,#7657ff,#9a6bff);color:white;font-weight:800;font-size:16px;cursor:pointer}.status{margin-top:16px;padding:14px;border-radius:14px;background:#0b0e14;border:1px solid var(--line);color:#cbd0dc;white-space:pre-wrap}.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:16px}.clip{background:#0b0e14;border:1px solid var(--line);border-radius:18px;padding:12px}.clip video{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:12px;background:#000}.download{display:block;text-align:center;margin-top:10px;padding:10px;border-radius:10px;background:#171b25;color:#fff;text-decoration:none}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}.feature{padding:18px;border:1px solid var(--line);border-radius:18px;background:#0c0f15}.feature b{display:block;margin-bottom:7px}.feature span{color:var(--muted);font-size:13px;line-height:1.5}@media(max-width:760px){.grid,.features{grid-template-columns:1fr}.nav{margin-bottom:35px}.hero h1{letter-spacing:-2px}}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <div class="nav"><div class="logo">✦ Clip Finder AI</div><div class="pill">V15 · moteur local</div></div>
-  <section class="hero">
-    <h1>Transforme une longue vidéo en <span>clips prêts à poster.</span></h1>
-    <p>Importe ta vidéo ou colle une URL accessible. Clip Finder analyse la parole, repère les passages intéressants et génère plusieurs vidéos verticales 9:16 avec sous-titres.</p>
-  </section>
+async function readResponse(r){
+  const text = await r.text();
 
-  <section class="card">
-    <div class="tabs">
-      <button class="tab active" data-mode="url">Lien vidéo</button>
-      <button class="tab" data-mode="file">Fichier</button>
-    </div>
-    <div id="urlBox"><input id="url" type="url" placeholder="https://..."></div>
-    <div id="fileBox" style="display:none"><input id="file" type="file" accept="video/*"></div>
-
-    <div class="grid">
-      <label>Nombre de clips<select id="count"><option>3</option><option selected>5</option><option>10</option><option>15</option><option>20</option></select></label>
-      <label>Durée cible<select id="duration"><option>60</option><option>75</option><option selected>90</option><option>120</option><option>150</option><option>180</option></select></label>
-      <label>Langue<select id="language"><option value="auto">Auto</option><option value="fr">Français</option><option value="en">English</option><option value="es">Español</option></select></label>
-    </div>
-
-    <label class="check"><input id="captions" type="checkbox" checked> Sous-titres automatiques</label>
-    <label class="check"><input id="reframe" type="checkbox" checked> Recadrage intelligent 9:16</label>
-    <label style="display:block;margin-top:16px;color:#cbd0dc">Contexte facultatif<textarea id="context" placeholder="Ex : cherche les moments drôles, les révélations ou les phrases fortes..."></textarea></label>
-    <button class="main" id="go">Créer mes clips</button>
-    <div id="status" class="status">Prêt.</div>
-    <div id="results" class="results"></div>
-  </section>
-
-  <div class="features">
-    <div class="feature"><b>🎙️ Sous-titres</b><span>Transcription locale avec Whisper.</span></div>
-    <div class="feature"><b>📱 9:16</b><span>Format vertical 1080×1920.</span></div>
-    <div class="feature"><b>✂️ Multi-clips</b><span>Plusieurs passages de 1 à 3 minutes.</span></div>
-    <div class="feature"><b>👤 Visages</b><span>Recadrage automatique autour du visage détecté.</span></div>
-  </div>
-</div>
-<script>
-let mode='url';
-const $=id=>document.getElementById(id);
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); mode=b.dataset.mode;
-  $('urlBox').style.display=mode==='url'?'block':'none';
-  $('fileBox').style.display=mode==='file'?'block':'none';
-});
-function setStatus(x){$('status').textContent=x}
-async function poll(id){
-  for(let i=0;i<720;i++){
-    const r=await fetch('/api/jobs/'+id); const j=await r.json();
-    setStatus(j.status==='done'?'Terminé ✓':j.status==='error'?'Échec\\n'+(j.error||'Erreur inconnue'):j.step||'Traitement...');
-    if(j.status==='done'){
-      $('results').innerHTML=j.clips.map(c=>`<div class="clip"><video controls preload="metadata" src="${c.url}"></video><a class="download" href="${c.url}" download>Télécharger MP4</a></div>`).join('');
-      return;
-    }
-    if(j.status==='error') return;
-    await new Promise(r=>setTimeout(r,2500));
+  if(!text.trim()){
+    throw new Error(`Le serveur a renvoyé une réponse vide (HTTP ${r.status}).`);
   }
-  setStatus('Le traitement prend plus de temps que prévu. Recharge la page plus tard.');
-}
-$('go').onclick=async()=>{
-  $('results').innerHTML=''; setStatus('Envoi de la tâche...');
-  const fd=new FormData();
-  if(mode==='url') fd.append('url',$('url').value.trim());
-  else { const f=$('file').files[0]; if(f) fd.append('file',f); }
-  fd.append('count',$('count').value); fd.append('duration',$('duration').value);
-  fd.append('language',$('language').value); fd.append('captions',$('captions').checked?'1':'0');
-  fd.append('reframe',$('reframe').checked?'1':'0'); fd.append('context',$('context').value);
+
+  let data;
+
   try{
-    const r=await fetch('/api/jobs',{method:'POST',body:fd});
-    const j=await r.json(); if(!r.ok) throw new Error(j.detail||'Erreur');
-    await poll(j.id);
-  }catch(e){setStatus('Échec\\n'+e.message)}
-};
-</script>
-</body>
-</html>
+    data = JSON.parse(text);
+  }catch(e){
+    throw new Error(
+      `Réponse serveur invalide (HTTP ${r.status}).\n${text.slice(0,500)}`
+    );
+  }
+
+  if(!r.ok){
+    throw new Error(data.detail || data.error || `Erreur HTTP ${r.status}`);
+  }
+
+  return data;
+}
