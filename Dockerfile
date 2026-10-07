@@ -18,6 +18,7 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt ./
+
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
@@ -27,4 +28,4 @@ RUN mkdir -p /tmp/clip-finder-data
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-10000}"]
+CMD ["sh", "-c", "exec uvicorn app:app --host 0.0.0.0 --port ${PORT:-10000}"]
